@@ -33,17 +33,17 @@ jobs:
         run: |
           mkdir -p build-src
           unzip -q Hike_Lernen_mit_Keno_FINAL_Cloud.zip -d build-src
-      -       - name: AndroidX und JVM 17 aktivieren
+      - name: AndroidX und JVM 17 aktivieren
         run: |
           echo "android.useAndroidX=true" > build-src/gradle.properties
-          cat >> build-src/app/build.gradle.kts <<'EOF'
 
-          android {
-              compileOptions {
-                  sourceCompatibility = JavaVersion.VERSION_17
-                  targetCompatibility = JavaVersion.VERSION_17
-              }
-          }
+          sed -i '/compileSdk = 35/a\
+              compileOptions {\
+                  sourceCompatibility = JavaVersion.VERSION_17\
+                  targetCompatibility = JavaVersion.VERSION_17\
+              }' build-src/app/build.gradle.kts
+
+          cat >> build-src/app/build.gradle.kts <<'EOF'
 
           kotlin {
               jvmToolchain(17)
