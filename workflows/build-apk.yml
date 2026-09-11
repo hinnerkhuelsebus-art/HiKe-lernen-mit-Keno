@@ -49,14 +49,23 @@ jobs:
               jvmToolchain(17)
           }
           EOF
-      - name: APK bauen
+      -      - name: APK erstellen
         run: |
           echo "Suche Gradle-Projekt..."
           find build-src -name settings.gradle.kts -o -name settings.gradle
           PROJECT_DIR=$(dirname "$(find build-src -name settings.gradle.kts -o -name settings.gradle | head -n 1)")
           echo "Projekt gefunden: $PROJECT_DIR"
           cd "$PROJECT_DIR"
-          gradle assembleDebug --no-daemon
+
+          cat > force-jvm.gradle <<'EOF'
+          allprojects {
+              tasks.withType(org.gradle.api.tasks.compile.JavaCompile).configureEach {
+                  options.release.set(17)
+              }
+          }
+          EOF
+
+          gradle --init-script force-jvm.gradle assembleDebug --no-daemon
 
       - name: Hike APK bereitstellen
         uses: actions/upload-artifact@v4
