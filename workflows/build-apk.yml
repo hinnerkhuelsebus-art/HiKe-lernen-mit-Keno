@@ -1,9 +1,6 @@
 name: Hike APK bauen
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
@@ -13,11 +10,6 @@ jobs:
     steps:
       - name: Projekt laden
         uses: actions/checkout@v4
-
-      - name: ZIP entpacken
-        run: |
-          mkdir build-src
-          unzip -q Hike_Lernen_mit_Keno_FINAL_Cloud.zip -d build-src
 
       - name: Java 17
         uses: actions/setup-java@v4
@@ -30,7 +22,6 @@ jobs:
 
       - name: Android SDK Pakete
         run: |
-          yes | sdkmanager --licenses >/dev/null || true
           sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
       - name: Gradle installieren
@@ -38,22 +29,19 @@ jobs:
         with:
           gradle-version: '8.10.2'
 
+      - name: ZIP entpacken
+        run: |
+          mkdir -p build-src
+          unzip -q Hike_Lernen_mit_Keno_FINAL_Cloud.zip -d build-src
+
       - name: APK bauen
         run: |
-          - name: APK bauen
-  run: |
-    echo "Projektinhalt:"
-    find build-src -maxdepth 4 -type f | sort
-    echo "Gradle-Projekt suchen:"
-    find build-src -name settings.gradle.kts -o -name settings.gradle
-    echo "App-Modul suchen:"
-    find build-src -type d -name app
-
-    PROJECT_DIR=$(dirname "$(find build-src -name settings.gradle.kts -o -name settings.gradle | head -n 1)")
-    echo "Baue Projekt in: $PROJECT_DIR"
-
-    cd "$PROJECT_DIR"
-    gradle assembleDebug --no-daemon
+          echo "Suche Gradle-Projekt..."
+          find build-src -name settings.gradle.kts -o -name settings.gradle
+          PROJECT_DIR=$(dirname "$(find build-src -name settings.gradle.kts -o -name settings.gradle | head -n 1)")
+          echo "Projekt gefunden: $PROJECT_DIR"
+          cd "$PROJECT_DIR"
+          gradle assembleDebug --no-daemon
 
       - name: Hike APK bereitstellen
         uses: actions/upload-artifact@v4
