@@ -1,11 +1,7 @@
 name: Hike APK bauen
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
-
 
 jobs:
   build:
@@ -25,18 +21,30 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Android SDK Pakete
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+        run: |
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
       - name: Gradle installieren
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.10.2'
 
+      - name: ZIP entpacken
+        run: |
+          mkdir -p build-src
+          unzip -q Hike_Lernen_mit_Keno_FINAL_Cloud.zip -d build-src
+
       - name: APK bauen
-        run: gradle assembleDebug --no-daemon
+        run: |
+          echo "Suche Gradle-Projekt..."
+          find build-src -name settings.gradle.kts -o -name settings.gradle
+          PROJECT_DIR=$(dirname "$(find build-src -name settings.gradle.kts -o -name settings.gradle | head -n 1)")
+          echo "Projekt gefunden: $PROJECT_DIR"
+          cd "$PROJECT_DIR"
+          gradle assembleDebug --no-daemon
 
       - name: Hike APK bereitstellen
         uses: actions/upload-artifact@v4
         with:
           name: Hike-Lernen-mit-Keno-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: build-src/**/app/build/outputs/apk/debug/app-debug.apk
