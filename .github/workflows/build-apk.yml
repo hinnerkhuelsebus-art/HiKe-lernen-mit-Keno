@@ -33,7 +33,9 @@ jobs:
         run: |
           mkdir -p build-src
           unzip -q Hike_Lernen_mit_Keno_FINAL_Cloud.zip -d build-src
-
+      - name: AndroidX aktivieren
+        run: |
+          echo "android.useAndroidX=true" > build-src/gradle.properties
       - name: APK bauen
         run: |
           echo "Suche Gradle-Projekt..."
