@@ -40,11 +40,23 @@ jobs:
 
       - name: APK bauen
         run: |
-          cd build-src
-          gradle assembleDebug --no-daemon
+          - name: APK bauen
+  run: |
+    echo "Projektinhalt:"
+    find build-src -maxdepth 4 -type f | sort
+    echo "Gradle-Projekt suchen:"
+    find build-src -name settings.gradle.kts -o -name settings.gradle
+    echo "App-Modul suchen:"
+    find build-src -type d -name app
+
+    PROJECT_DIR=$(dirname "$(find build-src -name settings.gradle.kts -o -name settings.gradle | head -n 1)")
+    echo "Baue Projekt in: $PROJECT_DIR"
+
+    cd "$PROJECT_DIR"
+    gradle assembleDebug --no-daemon
 
       - name: Hike APK bereitstellen
         uses: actions/upload-artifact@v4
         with:
           name: Hike-Lernen-mit-Keno-APK
-          path: build-src/app/build/outputs/apk/debug/app-debug.apk
+          path: build-src/**/app/build/outputs/apk/debug/app-debug.apk
