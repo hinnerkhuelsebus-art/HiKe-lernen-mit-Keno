@@ -43,7 +43,8 @@ jobs:
           echo "Projekt gefunden: $PROJECT_DIR"
 
           echo "android.useAndroidX=true" > "$PROJECT_DIR/gradle.properties"
-
+echo echo "android.useAndroidX=true" > "$PROJECT_DIR/gradle.properties"
+echo "org.gradle.jvmargs=-Xmx4g -Dfile.encoding=UTF-8" >> "$PROJECT_DIR/gradle.properties"
           cat > "$PROJECT_DIR/app/build.gradle.kts" <<'EOF'
           plugins {
               id("com.android.application")
