@@ -45,6 +45,7 @@ jobs:
           echo "android.useAndroidX=true" > "$PROJECT_DIR/gradle.properties"
 
           echo "org.gradle.jvmargs=-Xmx4g -Dfile.encoding=UTF-8" >> "$PROJECT_DIR/gradle.properties"
+                   sed -i '1i @file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)' "$PROJECT_DIR/app/src/main/java/de/hike/lernenmitkeno/MainActivity.kt"
           cat > "$PROJECT_DIR/app/build.gradle.kts" <<'EOF'
           plugins {
               id("com.android.application")
